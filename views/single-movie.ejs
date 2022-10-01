@@ -7,17 +7,21 @@
             <h1 class="single-movie-title">
                 <%= parsedData.title %>
             </h1>
+            <ul>
+                <li><%= parsedData.runtime %></li>
+            </ul>
+            <a href="<%= parsedData.homepage %>"><img src="<%= imageBaseUrl + parsedData.poster_path %>"/></a>
 
-            <h3 class="single-movie-title">
-                <%= parsedData.tagline %>
+            <h3 class="overview-header">
+                Overview
             </h3>
 
-
-            <a href="<%= parsedData.homepage %>"><img src="<%= imageBaseUrl+parsedData.poster_path %>" /></a>
-
-            <p class="overview-header">Movie Synopsis: <span class="single-movie-overview">
-					<%= parsedData.overview %>
-				</span></p>
+            <h4 class="single-movie-title">
+                <%= parsedData.tagline %>
+            </h4>
+            <p class="single-movie-overview">
+                <%= parsedData.overview %>
+            </p>
         </div>
     </div>
 </div>
@@ -34,14 +38,29 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Movie Information</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">More Details</h4>
             </div>
             <div class="modal-body">
-                <a href="https://www.imdb.com/title/<%= parsedData.imdb_id %>" target="_blank">IMDB link</a>
-                <p><%= parsedData.budget %></p>
-                <p><%= parsedData.revenue %></p>
-                <p><%= parsedData.release_date%></p>
+                <b class="modal-title" id="myModalLabel"><%= parsedData.title %></b><br>
+                <a href="https://www.imdb.com/title/<%= parsedData.imdb_id %>" target="_blank">IMDB page</a><br><br>
+
+                <b>Budget:</b>
+                <p><%= new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        maximumSignificantDigits: 9
+                    }).format(parsedData.budget) %></p>
+                <b>Revenue:</b>
+                <p><%= new Intl.NumberFormat('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                        maximumSignificantDigits: 9
+                    }).format(parsedData.revenue) %></p>
+                <b>Released:</b>
+                <p><%= parsedData.release_date %></p>
+                <b>Production Companies:</b>
                 <ul>
                     <% parsedData.production_companies.forEach((company)=>{ %>
                         <li><%= company.name %></li>
