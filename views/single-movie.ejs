@@ -7,9 +7,6 @@
             <h1 class="single-movie-title">
                 <%= parsedData.title %>
             </h1>
-            <ul>
-                <li><%= parsedData.runtime %></li>
-            </ul>
             <a href="<%= parsedData.homepage %>"><img src="<%= imageBaseUrl + parsedData.poster_path %>"/></a>
 
             <h3 class="overview-header">
@@ -46,6 +43,8 @@
                 <b class="modal-title" id="myModalLabel"><%= parsedData.title %></b><br>
                 <a href="https://www.imdb.com/title/<%= parsedData.imdb_id %>" target="_blank">IMDB page</a><br><br>
 
+                <b>Runtime:</b>
+                <p><%= parsedData.runtime %> min.</p>
                 <b>Budget:</b>
                 <p><%= new Intl.NumberFormat('en-US', {
                         style: 'currency',
