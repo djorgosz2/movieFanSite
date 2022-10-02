@@ -1,21 +1,40 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const helmet = require('helmet');
+const indexRouter = require('./routes/index');
+const app = express();
+const session = require('express-session');
+const passport = require("passport");
+const GitHubStrategy = require('passport-github').Strategy;
+const config = require('./config');
+const githubConfig = {
+    clientID: config.clientId,
+    clientSecret: config.clientSecret,
+    callbackURL: config.callbackUrl
+};
 
-var indexRouter = require('./routes/index');
-
-var app = express();
-const helmet = require('helmet')
 app.use(helmet({
     //allow cross origin resource load
     crossOriginEmbedderPolicy: false,
-    contentSecurityPolicy:false
+    contentSecurityPolicy: false
 }));
 
+//session and login setup
+app.use(session({
+    secret: config.sessionSecret,//secret is needed for express to generate valid session ids
+    resave: false,
+    saveUninitialized: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use('github', new GitHubStrategy(githubConfig, (accessToken, refreshToken, profile, cb) => cb(null, profile)));
+passport.serializeUser((user,cb)=>cb(null,user));
+passport.deserializeUser((user,cb)=>cb(null,user));
 
-// view engine setup
+//view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 

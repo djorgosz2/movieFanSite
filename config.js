@@ -9,4 +9,5 @@ module.exports = {
     apiBaseUrl: process.env.API_BASE_URL,
     nowPlayingUrl: `${process.env.API_BASE_URL}/movie/now_playing?api_key=${process.env.API_KEY}`,
     imageBasedUrl: process.env.IMAGE_BASE_URL,
+    sessionSecret: process.env.SESSION_SECRET
 }

@@ -4,11 +4,17 @@ const axios = require('axios');
 const passport = require('passport');
 const config = require('../config');
 
+router.get('/login',passport.authenticate('github'));
+router.get('/auth',passport.authenticate('github',{
+    successRedirect:'/',
+    failureRedirect:'/error'
+}));
+
 //save image url
 router.use((req, res, next) => {
     res.locals.imageBaseUrl = config.imageBasedUrl;
     next();
-})
+});
 
 //home page
 router.get('/', async function (req, res, next) {
