@@ -1,23 +1,18 @@
 let express = require('express');
 let router = express.Router();
 const axios = require('axios');
-const dotenv = require('dotenv');
-dotenv.config();
-
-const apiKey = process?.env?.API_KEY;
-const apiBaseUrl = process?.env?.API_BASE_URL;
-const nowPlayingUrl = `${apiBaseUrl}/movie/now_playing?api_key=${apiKey}`;
-const imageBasedUrl = process?.env?.IMAGE_BASE_URL;
+const passport = require('passport');
+const config = require('../config');
 
 //save image url
 router.use((req, res, next) => {
-    res.locals.imageBaseUrl = imageBasedUrl;
+    res.locals.imageBaseUrl = config.imageBasedUrl;
     next();
 })
 
 //home page
 router.get('/', async function (req, res, next) {
-    const [err, movies] = await catchErrors(axios.get(nowPlayingUrl));
+    const [err, movies] = await catchErrors(axios.get(config.nowPlayingUrl));
     if (err || !movies?.data?.results) {
         res.send(err || 'No data');
     } else {
@@ -27,7 +22,7 @@ router.get('/', async function (req, res, next) {
 
 //single movie
 router.get('/movie/:id', async (req, res, next) => {
-    const movieUrl = `${apiBaseUrl}/movie/${req.params.id}?api_key=${apiKey}`;
+    const movieUrl = `${config.apiBaseUrl}/movie/${req.params.id}?api_key=${config.apiKey}`;
     const [err, movies] = await catchErrors(axios.get(movieUrl));
     if (err || !movies?.data) {
         res.send(err || 'No data');
@@ -40,16 +35,14 @@ router.get('/movie/:id', async (req, res, next) => {
 router.post('/search', async (req, res, next) => {
     const searchTerm = encodeURI(req.body.movieSearch);
     const category = req.body.category;
-    const movieUrl = `${apiBaseUrl}/search/${category}?query=${searchTerm}&api_key=${apiKey}`;
-    const [err, movies] = await catchErrors(axios.get(movieUrl));
-    if (err || !movies?.results[0]?.known_for || !movies?.data?.results) {
+    const movieUrl = `${config.apiBaseUrl}/search/${req.body.category}?query=${searchTerm}&api_key=${config.apiKey}`;
+    const [err, moviesOrActors] = await catchErrors(axios.get(movieUrl));
+    if (err || (!moviesOrActors?.results?.[0]?.known_for && !moviesOrActors?.data?.results?.[0])) {
         res.send(err || 'No data');
-    }
-    if (category === 'person') {
-        res.render('index', {parsedData: movies.results[0].known_for});
-
+    } else if (category === 'person') {
+        res.render('index', {parsedData: moviesOrActors.data.results[0].known_for});
     } else {
-        res.render('index', {parsedData: movies.data.results});
+        res.render('index', {parsedData: moviesOrActors.data.results});
     }
 });
 
